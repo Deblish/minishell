@@ -21,6 +21,7 @@ SOURCES = srcs/lexer/stack/token_utils.c \
 		  srcs/execution/simple_cmd.c \
 		  srcs/execution/pipe_sequence.c \
 		  srcs/execution/execute.c \
+		  srcs/info.c \
 		  srcs/main.c \
 		  srcs/signals/signals.c \
 		  srcs/env/env.c \

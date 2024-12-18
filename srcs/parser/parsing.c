@@ -84,11 +84,14 @@ int	parsing_main(t_token_stack *tokens, t_entry **table)
 	ret = -1;
 	while (ret == -1)
 	{
-		ft_putendl_fd("----------------", 1);
-		if (stack->top)
-			print_stack(stack, "stack");
-		if (tokens->top)
-			print_tokens(tokens, "tokens");
+		if (get_debug())
+		{
+			ft_putendl_fd("----------------", 1);
+			if (stack->top)
+				print_stack(stack, "stack");
+			if (tokens->top)
+				print_tokens(tokens, "tokens");
+		}
 		entry = table_lookup(stack, tokens, table);
 		if (!entry)
 		{
@@ -104,8 +107,11 @@ int	parsing_main(t_token_stack *tokens, t_entry **table)
 		else
 			ret = 0;
 	}
-	ft_putendl_fd("-------ast--------", 1);
-	traverse_ast(get_ast_root(stack), 0);
+	if (get_debug())
+	{
+		ft_putendl_fd("-------ast--------", 1);
+		traverse_ast(get_ast_root(stack), 0);
+	}
 	execute_ast(get_ast_root(stack));
 	/*ft_putendl_fd("----------------leftovers", 1);
 	print_stack(stack, "stack");

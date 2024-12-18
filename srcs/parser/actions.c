@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "parsing.h"
+#include "minishell.h"
 
 //organize error returns: malloc, logic
 int	action_shift(t_stack *stack, t_entry *entry, t_token_stack *tokens)
@@ -19,7 +20,8 @@ int	action_shift(t_stack *stack, t_entry *entry, t_token_stack *tokens)
 	t_node			*token;
 	t_ast_node		*ast_node;
 
-	ft_putendl_fd("-shift-", 1);
+	if (get_debug())
+		ft_putendl_fd("-shift-", 1);
 	popped_token = pop_token(tokens);
 	if (!popped_token)
 		return (-2);
@@ -50,7 +52,8 @@ int	action_reduce(t_stack *stack, t_entry *entry, t_entry **table)
 	t_node	*rule;
 	t_entry	*goto_entry;
 
-	ft_putendl_fd("-reduce-", 1);
+	if (get_debug())
+		ft_putendl_fd("-reduce-", 1);
 
 	//--ast_node type fetch
 	non_terminal = get_non_terminal(entry->go_to);
@@ -133,7 +136,11 @@ int	action_reduce(t_stack *stack, t_entry *entry, t_entry **table)
 
 int	action_accept(void) //t_stack *stack
 {
-	ft_putendl_fd("-accept-", 1);
+	if (get_debug())
+	{
+		ft_putendl_fd("-accept-", 1);
+		ft_putendl_fd("parsing accepted", 1);
+	}
 	/*
 	t_node	*state;
 	t_node	*symbol;
@@ -166,7 +173,6 @@ int	action_accept(void) //t_stack *stack
 	accept->ast_node = ast_node;
 	push(stack, accept);
 	*/
-	ft_putendl_fd("parsing accepted", 1);
 	return (1);
 }
 

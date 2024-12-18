@@ -18,6 +18,15 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+typedef struct s_info
+{
+	bool 	debug;
+}			t_info;
+
+t_info	*get_info(void);
+void	set_debug(bool debug);
+bool	get_debug(void);
+
 extern t_env *g_env;
 extern int	g_exit_status;
 

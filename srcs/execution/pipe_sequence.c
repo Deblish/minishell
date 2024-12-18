@@ -23,7 +23,7 @@ t_ast_node	**get_simple_cmds(t_ast_node *node, int *count)
 
 	//just one simple command
 	//pipe_sequence -> simple_command
-	if (node->child_count == 1)
+	if (node->child_count == 1) //kinda hardcoded, fits the grammar though
 	{
 		simple_cmds = gc_alloc(sizeof(t_ast_node *));
 		simple_cmds[0] = node->children[0];
@@ -47,8 +47,7 @@ t_ast_node	**get_simple_cmds(t_ast_node *node, int *count)
 		return (simple_cmds);
 	}
 }
-
-void	execute_pipeline(t_ast_node **command, int cmd_count)
+void	execute_pipeline(t_ast_node **commands, int cmd_count)
 {
 	int pipe_count;
 	int	pipefds[2 * (cmd_count - 1)];
@@ -66,33 +65,51 @@ void	execute_pipeline(t_ast_node **command, int cmd_count)
 		if (pipe(pipefds + i * 2) < 0)
 		{
 			perror("pipe");
-			//return ;
-			exit(1);
+			exit(EXIT_FAILURE); //is this the correct exit code
 		}
 		i++;
 	}
-	i = 0;
 	ignore_signals();
+	i = 0;
 	while (i < cmd_count)
 	{
+		//leaving in here for now but separate into a function
+		t_exec_info info;
+		char **argv;
+		info.heredoc_fd = -1;
+        info.redir_list = NULL;
+
+        //before forking
+        gather_redirects(commands[i], &info);
+
+        //build argv
+        argv = build_argv(commands[i]);
+
 		pid[i] = fork();
 		if (pid[i] < 0)
 		{
 			perror("fork");
-			//return ;
-			exit(1);
+			exit(EXIT_FAILURE);
 		}
 		else if (pid[i] == 0) //child
 		{
 			//if not first command
 			if (i > 0)
 			{
-				dup2(pipefds[(i-1) * 2], STDIN_FILENO);
+				if (dup2(pipefds[(i-1) * 2], STDIN_FILENO) < 0)
+				{
+					perror("dup2");
+					exit(EXIT_FAILURE);
+				}
 			}
 			//if not last command
 			if (i < cmd_count - 1)
 			{
-				dup2(pipefds[i * 2 + 1], STDOUT_FILENO);
+				if (dup2(pipefds[i * 2 + 1], STDOUT_FILENO) < 0)
+				{
+					perror("dup2");
+					exit(EXIT_FAILURE);
+				}
 			}
 			//close all pipes
 			j = 0;
@@ -101,13 +118,24 @@ void	execute_pipeline(t_ast_node **command, int cmd_count)
 				close(pipefds[j]);
 				j++;
 			}
-			execute_simple_cmd(command[i]);
-			//ft_putstr_fd("what is this case?", STDERR_FILENO);
-			exit(1);
+			//apply heredoc
+            if (info.heredoc_fd != -1)
+            {
+                if (dup2(info.heredoc_fd, STDIN_FILENO) < 0)
+                {
+                    perror("dup2 heredoc");
+                    exit(EXIT_FAILURE);
+                }
+                close(info.heredoc_fd);
+            }
+			apply_normal_redirections(info.redir_list);
+			execute_simple_piped_cmd(argv);
+			exit(EXIT_FAILURE);
 		}
+		//parent
 		i++;
 	}
-
+	//parent
 	//close all pipes
 	j = 0;
 	while (j < pipe_count * 2)

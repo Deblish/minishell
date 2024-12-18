@@ -24,10 +24,10 @@ int	main(int ac, char **av, char **envp)
 	int				ret;
 	t_entry			**table;
 
-	// ft_cd(ac, av);
-	// ft_pwd();
-	(void)ac;
 	(void)av;
+	set_debug(false);
+	if (ac > 1)
+		set_debug(true);
 	tokens = NULL;
 	activate_signal_handler();
 	tokens = init_token_stack();

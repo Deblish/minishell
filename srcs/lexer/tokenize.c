@@ -97,8 +97,12 @@ bool	tokenize_words(t_iterators *it, t_token_stack *stack)
 	}
 	word = gc_strndup(&it->input[it->start], it->cur - it->start);
 	node = create_token(WORD, word);
+	/*
 	if (quote == '\"')
 		node->state = DOUBLE_QUOTES;
+	else if (quote == '\'')
+		node->state = SINGLE_QUOTES;
+	*/
 	push_token(stack, node);
 	return (true);
 }

@@ -107,6 +107,7 @@ t_token_stack	*lexer(char *input)
 	eof = create_token(END, gc_strdup("EOF"));
 	push_token(rev_tokens, eof);
 	result = reverse_stack(rev_tokens);
-	print_token_stack(rev_tokens, "TOKEN STACK : AFTER");
+	if (get_debug())
+		print_token_stack(rev_tokens, "TOKEN STACK : AFTER");
 	return (result);
 }

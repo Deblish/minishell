@@ -31,11 +31,14 @@ typedef enum e_terminals
 	DGREAT = 260
 }				t_token;
 
+/*
 typedef enum e_quotes
 {
 	NORMAL = 0,
-	DOUBLE_QUOTES = 1
+	DOUBLE_QUOTES = 1,
+	SINGLE_QUOTES = 2
 }			t_quote_state;
+*/
 
 typedef struct s_lexer_iterators
 {
@@ -54,7 +57,7 @@ typedef struct s_token_node
 {
 	int					type;
 	char				*value;
-	t_quote_state		state;
+	//t_quote_state		state;
 	struct s_token_node	*next;
 }	t_token_node;
 
