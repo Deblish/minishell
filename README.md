@@ -49,5 +49,5 @@ To compile and run **Minishell**, ensure you have:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/KartikPat250905/minishell.git
+   git clone https://github.com/Deblish/minishell.git
    cd minishell
